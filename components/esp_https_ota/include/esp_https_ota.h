@@ -15,6 +15,7 @@
 #pragma once
 
 #include <esp_http_client.h>
+#include <esp_partition.h>
 #include <bootloader_common.h>
 
 #ifdef __cplusplus
@@ -91,7 +92,7 @@ esp_err_t esp_https_ota(const esp_http_client_config_t *config);
  *    - For other return codes, refer documentation in app_update component and esp_http_client
  *      component in esp-idf.
  */
-esp_err_t esp_https_ota_begin(esp_https_ota_config_t *ota_config, esp_https_ota_handle_t *handle);
+esp_err_t esp_https_ota_begin(esp_https_ota_config_t *ota_config, esp_https_ota_handle_t *handle, const esp_partition_t *parition);
 
 /**
  * @brief    Read image data from HTTP stream and write it to OTA partition

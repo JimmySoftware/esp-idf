@@ -163,7 +163,7 @@ static bool is_server_verification_enabled(esp_https_ota_config_t *ota_config) {
             || ota_config->http_config->crt_bundle_attach != NULL);
 }
 
-esp_err_t esp_https_ota_begin(esp_https_ota_config_t *ota_config, esp_https_ota_handle_t *handle)
+esp_err_t esp_https_ota_begin(esp_https_ota_config_t *ota_config, esp_https_ota_handle_t *handle, const esp_partition_t *partition)
 {
     esp_err_t err;
 
@@ -254,8 +254,13 @@ esp_err_t esp_https_ota_begin(esp_https_ota_config_t *ota_config, esp_https_ota_
     }
 
     https_ota_handle->update_partition = NULL;
+    if( partition ) {
+        https_ota_handle->update_partition = partition;
+    }
+    else {
+        https_ota_handle->update_partition = esp_ota_get_next_update_partition(NULL);
+    }
     ESP_LOGI(TAG, "Starting OTA...");
-    https_ota_handle->update_partition = esp_ota_get_next_update_partition(NULL);
     if (https_ota_handle->update_partition == NULL) {
         ESP_LOGE(TAG, "Passive OTA partition not found");
         err = ESP_FAIL;
@@ -581,7 +586,7 @@ esp_err_t esp_https_ota(const esp_http_client_config_t *config)
     };
 
     esp_https_ota_handle_t https_ota_handle = NULL;
-    esp_err_t err = esp_https_ota_begin(&ota_config, &https_ota_handle);
+    esp_err_t err = esp_https_ota_begin(&ota_config, &https_ota_handle, NULL);
     if (https_ota_handle == NULL) {
         return ESP_FAIL;
     }
